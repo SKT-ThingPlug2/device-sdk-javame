@@ -28,7 +28,7 @@ __Json__ | JSON | **[http://www.json.org/](http://www.json.org/)**
 
 ## Getting Started
 ThingPlug Simple SDK는 소스코드 형태로 제공되며 Application에서의 사용을 위해서는 다음과 같이 연동하여 사용하면 됩니다.
-보다 자세한 사용 예시는 **[Simple Test App](SDK)** 소스코드를 참고하시기 바랍니다.
+보다 자세한 사용 예시는 **[Simple Test App](SampleForSimpleSDK)** 소스코드를 참고하시기 바랍니다.
 
 ### Project에 Simple SDK 연결
 신규 Project에 Simple SDK를 추가하고자 할 경우, 아래와 같이 추가하시기 바랍니다. 
