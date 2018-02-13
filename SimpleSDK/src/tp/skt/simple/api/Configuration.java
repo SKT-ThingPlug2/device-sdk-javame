@@ -20,6 +20,8 @@ public class Configuration {
     private String loginName;
     /** login password **/
     private String loginPassword;
+    /** automatic reconnect **/
+    private boolean automaticReconnect = true;
 
     /**
      *
@@ -71,7 +73,20 @@ public class Configuration {
     public int getKeepAlive() {
         return keepAlive;
     }
+    
+    /**
+     * get Automatic Reconnect
+     * @return 
+     */
+    public boolean getAutomaticReconnect() {
+        return automaticReconnect;
+    }
 
+    public void setAutomaticReconnect(boolean automaticReconnect){
+        this.automaticReconnect = automaticReconnect;
+    }
+    
+    
     /**
      * get Client Id (Device Token)
      *
