@@ -47,7 +47,7 @@ public class SampleApp extends MIDlet {
         String hostAddress = Config.SIMPLE_SECURE_HOST;
         int hostPort = Config.SIMPLE_SECURE_PORT;
         
-        Configuration configuration = new Configuration(hostAddress, hostPort, Config.SIMPLE_KEEP_ALIVE, Config.DEVICE_TOKEN, Config.DEVICE_TOKEN, null);
+        Configuration configuration = new Configuration(hostAddress, hostPort, Config.SIMPLE_KEEP_ALIVE, Config.DEVICE_TOKEN, Config.DEVICE_TOKEN, null, Config.CLEAN_SESSION);
         simple = new Simple( Config.SIMPLE_SERVICE_NAME, Config.SIMPLE_DEVICE_NAME,
                 configuration,
                 connectionListener, true);

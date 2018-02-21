@@ -22,7 +22,9 @@ public class Configuration {
     private String loginPassword;
     /** automatic reconnect **/
     private boolean automaticReconnect = true;
-
+    /** clean session **/
+    private boolean cleanSession = true;
+    
     /**
      *
      *
@@ -40,13 +42,14 @@ public class Configuration {
      * @param loginName
      * @param loginPassword
      */
-    public Configuration(String serverAddress, int serverPort, int keepAlive , String clientId, String loginName, String loginPassword) {
+    public Configuration(String serverAddress, int serverPort, int keepAlive , String clientId, String loginName, String loginPassword, boolean cleanSession) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
         this.keepAlive = keepAlive;
         this.clientId = clientId;
         this.loginName = loginName;
         this.loginPassword = loginPassword;
+        this.cleanSession = cleanSession;
     }
 
     /**
@@ -55,6 +58,9 @@ public class Configuration {
      * @return address.
      */
     public String getServerAddress() {
+        if(null != serverAddress && serverAddress.endsWith("/")){
+            return serverAddress.substring(0, serverAddress.length()-1);
+        }
         return serverAddress;
     }
     
@@ -116,4 +122,11 @@ public class Configuration {
         return loginPassword;
     }
 
+    /**
+     * is cleanSession
+     * @return  cleanSession
+     */
+    public boolean isCleanSession(){
+        return cleanSession;
+    }
 }
