@@ -43,7 +43,7 @@ public class Simple {
     
     /** added data **/
     private String addedData = "";
-    
+      
     /**
      * Simple constructor
      *
@@ -77,6 +77,7 @@ public class Simple {
                 .clientId(configuration.getClientId())
                 .userName(configuration.getLoginName())
                 .password(configuration.getLoginPassword())
+                .cleanSession(configuration.isCleanSession())
                 .setSubscribeTopics(subscribeTopics)
                 .setLog(logEnabled).build();
         this.mqttListener = connectionListener;
@@ -90,7 +91,7 @@ public class Simple {
     public void tpSimpleConnect() {
         if(mqttClient == null || mqttListener == null) {
             return;
-        }
+        }    
         mqttClient.connect(mqttListener);
     }
     
@@ -111,6 +112,7 @@ public class Simple {
     public void tpSimpleDestroy() {
         if(mqttClient != null) {
             mqttClient.destroy();
+            mqttClient = null;
         }
     }
     
@@ -198,7 +200,7 @@ public class Simple {
                 payload = jsonObject.toString();
                 Util.log("\n" + topic + "\n" + payload);
             }
-            mqttClient.publish(topic, payload, listener);
+            publish(topic, payload, listener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
@@ -214,7 +216,7 @@ public class Simple {
                 topic = topic + "/offset";
             }
             
-            mqttClient.publish(topic, telemetry, listener);
+            publish(topic, telemetry, listener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
@@ -243,7 +245,7 @@ public class Simple {
             }
             String payload = jsonObject.toString();
             Util.log("\n" + topic + "\n" + payload);
-            mqttClient.publish(topic, payload, listener);
+            publish(topic, payload, listener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
@@ -260,7 +262,7 @@ public class Simple {
                 topic = topic + "/offset";
             }
             
-            mqttClient.publish(topic, attribute, listener);
+            publish(topic, attribute, listener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
@@ -311,7 +313,7 @@ public class Simple {
             jsonObject.put(Define.RPC_RSP, rpcRspObject);
             String payload = jsonObject.toString();
             Util.log("\n" + topic + "\n" + payload);
-            mqttClient.publish(topic, payload, listener);
+            publish(topic, payload, listener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
@@ -319,15 +321,9 @@ public class Simple {
     }
     
     public void tpSimpleRawResult(String response, final ResultListener listener) {
-        try {
-            //String topic = String.format("v1/dev/%s/%s/up", serviceName, deviceName);
-            String topic = "v1/dev/"+serviceName+"/"+deviceName+"/up";
-            Util.log("\n" + topic + "\n" + response);
-            mqttClient.publish(topic, response, listener);
-        } catch (MqttException e) {
-            e.printStackTrace();
-            listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
-        }
+        String topic = "v1/dev/"+serviceName+"/"+deviceName+"/up";
+        Util.log("\n" + topic + "\n" + response);
+        publish(topic, response, listener);
     }
     
     /**
@@ -366,10 +362,26 @@ public class Simple {
             addElement(jsonObject, subscribe.getCmdId());
             String payload = jsonObject.toString();
             Util.log("\n" + topic + "\n" + payload);
-            mqttClient.publish(topic, payload, listener);
+            publish(topic, payload, listener);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onFailure(Define.INTERNAL_SDK_ERROR, e.getMessage());
         }
+    }
+    
+   
+    private void publish(final String topic, final String payload, final ResultListener listener){
+        new Thread(new Runnable(){
+
+            public void run() {
+                try {
+                    mqttClient.publish(topic, payload, listener);
+                } catch (MqttException ex) {
+                    ex.printStackTrace();
+                    listener.onFailure(Define.INTERNAL_SDK_ERROR, ex.getMessage());
+                }
+            }
+            
+        }).start();
     }
 }

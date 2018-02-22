@@ -35,6 +35,7 @@ public class MQTTClient {
     private String version;
     private int keepAlive;
     private boolean automaticReconnect = true;
+    private boolean cleanSession = true;
     
     /** MqttAndroidClient **/
     private  MqttClient mqttClient;
@@ -53,7 +54,7 @@ public class MQTTClient {
      * @param password
      * @param version  if value is null, default value is 1.0
      */
-    MQTTClient(String baseUrl, String clientID, String userName, String password, String version, String[] subscribeTopics, int keepAlive, boolean automaticReconnect) {
+    MQTTClient(String baseUrl, String clientID, String userName, String password, String version, String[] subscribeTopics, int keepAlive, boolean automaticReconnect, boolean cleanSession) {
         this.baseUrl = baseUrl;
         this.clientID = clientID;
         this.userName = userName;
@@ -62,6 +63,7 @@ public class MQTTClient {
         this.subscribeTopics = subscribeTopics;
         this.keepAlive = keepAlive;
         this.automaticReconnect = automaticReconnect;
+        this.cleanSession = cleanSession;
     }
     
     /**
@@ -104,13 +106,16 @@ public class MQTTClient {
             // MQTT Client 생성및 설정.
             this.mqttClient = new MqttClient(baseUrl, clientID);
             
+            final boolean cleanSession = this.cleanSession;
             this.mqttClient.setCallback(new MqttCallbackExtended() {
 
                 public void connectComplete(boolean reconnect, String serverURI) {
                     if (reconnect == true) {
                         Util.log("Reconnected to : " + serverURI);
                         // Because Clean Session is true, we need to re-subscribe
-                         subscribeTopic();
+                        if(cleanSession){
+                            subscribeTopic();
+                        }
                     }
                 }
                 
@@ -126,6 +131,7 @@ public class MQTTClient {
                 
 
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
+                    Log.print(" ##### message Arrived : " + message.toString());
                     if (message.isDuplicate() == true) {
                         Util.log("message duplicated!");
                         return;
@@ -147,7 +153,7 @@ public class MQTTClient {
             
             
             final MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-            mqttConnectOptions.setCleanSession(false);
+            mqttConnectOptions.setCleanSession(cleanSession);
             mqttConnectOptions.setAutomaticReconnect(automaticReconnect);
             
             if (this.userName != null) {
@@ -161,27 +167,14 @@ public class MQTTClient {
             
             mqttConnectOptions.setKeepAliveInterval(this.keepAlive);
             
-//            mqttClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
-//                @Override
-//                public void onSuccess(IMqttToken asyncActionToken) {
-//                    mqttListener.onConnected();
-//                    subscribeTopic();
-//                }
-//
-//                @Override
-//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                    if (exception != null) {
-//                        exception.printStackTrace();
-//                    }
-//                    mqttListener.onConnectFailure();
-//                }
-//            });
-
             mqttClient.connect(mqttConnectOptions, new IMqttActionListener() {
 
                 public void onSuccess(IMqttToken asyncActionToken) {
                     mqttListener.onConnected();
-                    subscribeTopic();
+                    
+                    if(false == asyncActionToken.getSessionPresent()){
+                        subscribeTopic();
+                    }
                 }
 
 
@@ -241,7 +234,7 @@ public class MQTTClient {
      * @param callBack
      * @throws MqttException
      */
-    public void publish(String topic, String payload, final ResultListener callBack) throws MqttException {
+    public synchronized void publish(String topic, String payload, final ResultListener callBack) throws MqttException {
         MqttMessage message = new MqttMessage();
         message.setPayload(payload.getBytes());
         Util.log("publishTopic : " + topic);
@@ -293,6 +286,7 @@ public class MQTTClient {
         private String version;
         private String[] subscribeTopics;
         private boolean automaticReconnect = true;
+        private boolean cleanSession = true;
         
         
         /**
@@ -366,8 +360,8 @@ public class MQTTClient {
          */
         public Builder password(String password) {
 //            Util.checkNull(password, "password = null");
-this.password = password;
-return this;
+            this.password = password;
+            return this;
         }
         
         /**
@@ -410,13 +404,22 @@ return this;
         }
         
         /**
+         * set cleanSession
+         * @param cleanSession
+         * @return Builder
+         */
+        public Builder cleanSession(boolean cleanSession) {
+            this.cleanSession = cleanSession;
+            return this;
+        }
+        /**
          *
          *
          * @return
          */
         public MQTTClient build() {
             Util.checkNull(baseUrl, "baseUrl = null");
-            return new MQTTClient( baseUrl, clientId, userName, password, version, subscribeTopics, keepAlive, automaticReconnect);
+            return new MQTTClient( baseUrl, clientId, userName, password, version, subscribeTopics, keepAlive, automaticReconnect, cleanSession);
         }
     }
 }
