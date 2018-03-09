@@ -240,9 +240,5 @@ __tpSimpleSubscribe__ | 디바이스정보를 모니터링 한다.
     [Simple_JavaME.log](./log/Simple_JavaME.log)
     
 
-Copyright (c) 2017 SK Telecom Co., Ltd. All Rights Reserved.
-Distributed under Apache License Version 2.0.
-
-
-
-
+Copyright (c) 2018 SK telecom Co., Ltd. All Rights Reserved.
+Distributed under Apache License Version 2.0. See LICENSE for details.
