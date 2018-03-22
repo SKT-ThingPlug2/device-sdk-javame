@@ -18,8 +18,8 @@ public class Config {
     
     public static final String DEVICE_TOKEN = "{tbd}";
 
-    public static final String SIMPLE_SERVICE_NAME = "{tbd}";
-    public static final String SIMPLE_DEVICE_NAME = "{tbd}";
+    public static final String SERVICE_ID = "{tbd}";
+    public static final String DEVICE_ID = "{tbd}";
     public static final boolean CLEAN_SESSION = true;
 }
 
