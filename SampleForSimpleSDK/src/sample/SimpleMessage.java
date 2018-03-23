@@ -19,12 +19,19 @@ public class SimpleMessage {
     JSONObject attribute;
     
     String result;
+    ErrorResult error;
+    
     
     static public class RPCRequest{
         String jsonrpc;
         int id;
         String method;
         JSONArray params;
+    }
+
+    static public class ErrorResult{
+        int code;
+        String reason;
     }
     
     public static SimpleMessage parsing(String jsonMessage) throws JSONException{
@@ -33,6 +40,11 @@ public class SimpleMessage {
         JSONObject rootObject = new JSONObject(jsonMessage);
         if(rootObject.has("result")){
             simpleMessage.result = rootObject.getString("result");
+            if(simpleMessage.result.equals("fail")){
+                simpleMessage.error = new ErrorResult();
+                simpleMessage.error.code = rootObject.getInt("errorCode");
+                simpleMessage.error.reason = rootObject.getString("errorReason");
+            }
             return simpleMessage;
         }
         simpleMessage.cmd = rootObject.getString("cmd");

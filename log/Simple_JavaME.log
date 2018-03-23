@@ -1,14 +1,37 @@
 [AMS-TRACE] MIDlet:SampleForSimpleSDK status=2
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPCON=1,MQTTS,ssl://xxx.xxx.xxx.xxx,8883,300,1,simple_v1,devicetoken,myservice,mydevice
 [AMS-TRACE] MIDlet:SampleForSimpleSDK status=1
-TP_SIMPLE_SDK, userName : xxxxx
+TP_SIMPLE_SDK, userName : devicetoken
+TP_SIMPLE_SDK, [ATCOM] : OK
 TP_SIMPLE_SDK, [INFO] : onConnected
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCON=0
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPCON
+TP_SIMPLE_SDK, [ATCOM] : OK
+status:connected
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTP
+TP_SIMPLE_SDK, [ATCOM] : OK
+status:connected
+thingplug_protocol:MQTTS
+thingplug_port:8883
+keep-alive:300
+cleansession:true
+api_version:simple_v1
+device_token:devicetoken
+service_id:myservice
+device_id:mydevice
 TP_SIMPLE_SDK, [INFO] : onSubscribed
 TP_SIMPLE_SDK, [INFO] : send Attribute
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/attribute
-TP_SIMPLE_SDK, publishMessage : {"sysHardwareVersion":"1.0", "sysSerialNumber":"710DJC5I10000290", "sysErrorCode":0, "sysLocationLongitude":127.115479, "sysLocationLatitude": 37.380257, "led":7}
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPDAT=1,attribute,0,{"sysHardwareVersion":"1.0", "sysSerialNumber":"710DJC5I10000290", "sysErrorCode":0, "sysLocationLongitude":127.115479, "sysLocationLatitude": 37.380257, "led":7}
+TP_SIMPLE_SDK, [ATCOM] : OK
 TP_SIMPLE_SDK, [INFO] : send Telemetry
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/telemetry
-TP_SIMPLE_SDK, publishMessage : {"light":287.28696,"humidity":54.986946,"temperature":31.986946,"ts":1517462203}
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPDAT=1,telemetry,0,{"light":286.61725,"humidity":54.060623,"temperature":31.060625,"ts":1521622683}
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/attribute
+TP_SIMPLE_SDK, publishMessage : {"sysHardwareVersion":"1.0", "sysSerialNumber":"710DJC5I10000290", "sysErrorCode":0, "sysLocationLongitude":127.115479, "sysLocationLatitude": 37.380257, "led":7}
+TP_SIMPLE_SDK, [ATCOM] : OK
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPERR=1
+TP_SIMPLE_SDK, [ATCOM] : result : +SKTPE:0
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/telemetry
+TP_SIMPLE_SDK, publishMessage : {"light":286.61725,"humidity":54.060623,"temperature":31.060625,"ts":1521622683}
 TP_SIMPLE_SDK, message delivered
 TP_SIMPLE_SDK, [INFO] : onDelivered
 TP_SIMPLE_SDK, message publish success
@@ -23,24 +46,29 @@ TP_SIMPLE_SDK, ____________________________
 
 
 
-TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/javame/down - {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":1}],"id":1313842533}}
-TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/javame/down
-TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":1}],"id":1313842533}}
+TP_SIMPLE_SDK,  ##### message Arrived : {"serviceName":"myservice","deviceName":"mydevice","cmdId":24,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":1}],"id":1134684070}}
+TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/mydevice/down - {"serviceName":"myservice","deviceName":"mydevice","cmdId":24,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":1}],"id":1134684070}}
+TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/mydevice/down
+TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":24,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":1}],"id":1134684070}}
 TP_SIMPLE_SDK, 
 
 
 
 TP_SIMPLE_SDK, [INFO] : ### TP_USER --------------START[[
-TP_SIMPLE_SDK, [INFO] : rpc : 2.0, id : 1313842533cmd : 1
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_user,1134684070,1,[{"led":1}]
+TP_SIMPLE_SDK, [INFO] : rpc : 2.0, id : 1134684070cmd : 1
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPRES=1,tp_user,1134684070,0,{"led":1}
 TP_SIMPLE_SDK, 
-v1/dev/myservice/javame/up
-{"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"led":7},"jsonrpc":"2.0","id":1313842533}}
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/up
-TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"led":7},"jsonrpc":"2.0","id":1313842533}}
+v1/dev/myservice/mydevice/up
+{"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"led":1},"jsonrpc":"2.0","id":1134684070}}
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_user,1134684070,3
+TP_SIMPLE_SDK, [ATCOM] : OK
 TP_SIMPLE_SDK, [INFO] : ### TP_USER --------------]]END
 
 
 
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/up
+TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"led":1},"jsonrpc":"2.0","id":1134684070}}
 TP_SIMPLE_SDK, message delivered
 TP_SIMPLE_SDK, [INFO] : onDelivered
 TP_SIMPLE_SDK, message publish success
@@ -48,24 +76,29 @@ TP_SIMPLE_SDK, ____________________________
 
 
 
-TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/javame/down - {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":11}],"id":1313842534}}
-TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/javame/down
-TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":11}],"id":1313842534}}
+TP_SIMPLE_SDK,  ##### message Arrived : {"serviceName":"myservice","deviceName":"mydevice","cmdId":11,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":11}],"id":118658342}}
+TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/mydevice/down - {"serviceName":"myservice","deviceName":"mydevice","cmdId":11,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":11}],"id":118658342}}
+TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/mydevice/down
+TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":11,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_user","params":[{"led":11}],"id":118658342}}
 TP_SIMPLE_SDK, 
 
 
 
 TP_SIMPLE_SDK, [INFO] : ### TP_USER --------------START[[
-TP_SIMPLE_SDK, [INFO] : rpc : 2.0, id : 1313842534cmd : 11
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_user,118658342,1,[{"led":11}]
+TP_SIMPLE_SDK, [INFO] : rpc : 2.0, id : 118658342cmd : 11
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPRES=1,tp_user,118658342,1,{"code":111, "message":"wrong parameters"}
 TP_SIMPLE_SDK, 
-v1/dev/myservice/javame/up
-{"cmdId":1,"result":"fail","cmd":"jsonRpc","rpcRsp":{"error":{"message":"wrong parameters","code":111},"jsonrpc":"2.0","id":1313842534}}
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/up
-TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"fail","cmd":"jsonRpc","rpcRsp":{"error":{"message":"wrong parameters","code":111},"jsonrpc":"2.0","id":1313842534}}
+v1/dev/myservice/mydevice/up
+{"cmdId":1,"result":"fail","cmd":"jsonRpc","rpcRsp":{"error":{"message":"wrong parameters","code":111},"jsonrpc":"2.0","id":118658342}}
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_user,118658342,3
+TP_SIMPLE_SDK, [ATCOM] : OK
 TP_SIMPLE_SDK, [INFO] : ### TP_USER --------------]]END
 
 
 
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/up
+TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"fail","cmd":"jsonRpc","rpcRsp":{"error":{"message":"wrong parameters","code":111},"jsonrpc":"2.0","id":118658342}}
 TP_SIMPLE_SDK, message delivered
 TP_SIMPLE_SDK, [INFO] : onDelivered
 TP_SIMPLE_SDK, message publish success
@@ -73,43 +106,24 @@ TP_SIMPLE_SDK, ____________________________
 
 
 
-TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/javame/down - {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":1313842535}}
-TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/javame/down
-TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":1313842535}}
-TP_SIMPLE_SDK, 
-
-
-
-TP_SIMPLE_SDK, [INFO] : ### TP_REMOTE --------------START[[
-TP_SIMPLE_SDK, 
-v1/dev/myservice/javame/up
-{"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":1313842535}}
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/up
-TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":1313842535}}
-TP_SIMPLE_SDK, [INFO] : ### TP_REMOTE --------------]]END
-
-
-
-TP_SIMPLE_SDK, message delivered
-TP_SIMPLE_SDK, [INFO] : onDelivered
-TP_SIMPLE_SDK, message publish success
-TP_SIMPLE_SDK, ____________________________
-
-
-
-TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/javame/down - {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://<thingplug_host>/portal/services/myservice/firmwares/1/download","http://<thingplug_host>/portal/firmware-upgrade-devices/23"],"id":1313842536}}
-TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/javame/down
-TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"javame","cmdId":-9999,"cmd":"jsonRpc","rpcMode":"twoway","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://<thingplug_host>/portal/services/myservice/firmwares/1/download","http://<thingplug_host>/portal/firmware-upgrade-devices/23"],"id":1313842536}}
+TP_SIMPLE_SDK,  ##### message Arrived : {"serviceName":"myservice","deviceName":"mydevice","cmdId":0,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://<thingplug_host>/portal/services/myservice/firmwares/1/download","http://<thingplug_host>/portal/firmware-upgrade-devices/23"],"id":118658343}}
+TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/mydevice/down - {"serviceName":"myservice","deviceName":"mydevice","cmdId":0,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://<thingplug_host>/portal/services/myservice/firmwares/1/download","http://<thingplug_host>/portal/firmware-upgrade-devices/23"],"id":118658343}}
+TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/mydevice/down
+TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":0,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_fwupgrade","params":["http://<thingplug_host>/portal/services/myservice/firmwares/1/download","http://<thingplug_host>/portal/firmware-upgrade-devices/23"],"id":118658343}}
 TP_SIMPLE_SDK, 
 
 
 
 TP_SIMPLE_SDK, [INFO] : ### TP_FWUPGRADE --------------START[[
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_fwupgrade,118658343,1,["http://<thingplug_host>/portal/services/myservice/firmwares/1/download","http://<thingplug_host>/portal/firmware-upgrade-devices/23"]
+TP_SIMPLE_SDK, [ATCOM] : AT+SKTPRES=1,tp_fwupgrade,118658343,0,{"status":"SUCCESS"}
 TP_SIMPLE_SDK, 
-v1/dev/myservice/javame/up
-{"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":1313842536}}
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/up
-TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":1313842536}}
+v1/dev/myservice/mydevice/up
+{"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":118658343}}
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_fwupgrade,118658343,3
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/up
+TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":118658343}}
+TP_SIMPLE_SDK, [ATCOM] : OK
 TP_SIMPLE_SDK, [INFO] : ### TP_FWUPGRADE --------------]]END
 
 
@@ -121,24 +135,54 @@ TP_SIMPLE_SDK, ____________________________
 
 
 
-TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/javame/down - {"deviceId":"d7580e80-000c-11e8-8afe-2bbe105e2946","cmdId":993544300,"cmd":"setAttribute","attribute":{"led":7}}
-TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/javame/down
-TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"deviceId":"d7580e80-000c-11e8-8afe-2bbe105e2946","cmdId":993544300,"cmd":"setAttribute","attribute":{"led":7}}
+TP_SIMPLE_SDK,  ##### message Arrived : {"serviceName":"myservice","deviceName":"mydevice","cmdId":0,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":118658344}}
+TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/mydevice/down - {"serviceName":"myservice","deviceName":"mydevice","cmdId":0,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":118658344}}
+TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/mydevice/down
+TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"serviceName":"myservice","deviceName":"mydevice","cmdId":0,"cmd":"jsonRpc","rpcReq":{"jsonrpc":"2.0","method":"tp_remote","params":["AT+CPSMS=1,,,01000001,00100011"],"id":118658344}}
+TP_SIMPLE_SDK, 
+
+
+
+TP_SIMPLE_SDK, [INFO] : ### TP_REMOTE --------------START[[
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_remote,118658344,1,["AT+CPSMS=1,,,01000001,00100011"]
+TP_SIMPLE_SDK, 
+v1/dev/myservice/mydevice/up
+{"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":118658344}}
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=tp_remote,118658344,3
+TP_SIMPLE_SDK, [ATCOM] : OK
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/up
+TP_SIMPLE_SDK, [INFO] : ### TP_REMOTE --------------]]END
+
+
+
+TP_SIMPLE_SDK, publishMessage : {"cmdId":1,"result":"success","cmd":"jsonRpc","rpcRsp":{"result":{"status":"SUCCESS"},"jsonrpc":"2.0","id":118658344}}
+TP_SIMPLE_SDK, message delivered
+TP_SIMPLE_SDK, [INFO] : onDelivered
+TP_SIMPLE_SDK, message publish success
+TP_SIMPLE_SDK, ____________________________
+
+
+
+TP_SIMPLE_SDK,  ##### message Arrived : {"deviceId":"d39d6ae0-16de-11e8-bb7f-a35498543952","cmdId":109611967,"cmd":"setAttribute","attribute":{"led":6}}
+TP_SIMPLE_SDK, messageArrived : v1/dev/myservice/mydevice/down - {"deviceId":"d39d6ae0-16de-11e8-bb7f-a35498543952","cmdId":109611967,"cmd":"setAttribute","attribute":{"led":6}}
+TP_SIMPLE_SDK, [INFO] : onMessageReceived topic : v1/dev/myservice/mydevice/down
+TP_SIMPLE_SDK, [INFO] : onMessageReceived payload : {"deviceId":"d39d6ae0-16de-11e8-bb7f-a35498543952","cmdId":109611967,"cmd":"setAttribute","attribute":{"led":6}}
 TP_SIMPLE_SDK, 
 
 
 
 TP_SIMPLE_SDK, [INFO] : ### SETATTRIBUTE --------------START[[
-TP_SIMPLE_SDK, [INFO] : led :7, 993544300
+TP_SIMPLE_SDK, [ATCOM] : +SKTPCMD=set_attr,0,3,{"led":6}
+TP_SIMPLE_SDK, [INFO] : led :6, 0
 TP_SIMPLE_SDK, 
-v1/dev/myservice/javame/attribute
-{"led":7}
-TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/javame/attribute
-TP_SIMPLE_SDK, publishMessage : {"led":7}
+v1/dev/myservice/mydevice/attribute
+{"led":6}
 TP_SIMPLE_SDK, [INFO] : ### SETATTRIBUTE --------------]]END
 
 
 
+TP_SIMPLE_SDK, publishTopic : v1/dev/myservice/mydevice/attribute
+TP_SIMPLE_SDK, publishMessage : {"led":6}
 TP_SIMPLE_SDK, message delivered
 TP_SIMPLE_SDK, [INFO] : onDelivered
 TP_SIMPLE_SDK, message publish success

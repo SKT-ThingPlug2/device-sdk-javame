@@ -35,6 +35,8 @@ import tp.skt.simple.element.StringElement;
  * Written 2017, by SK Telecom
  */
 public class SampleApp extends MIDlet {
+    private final static String TAG_AT_CMD = "[ATCOM] :";
+    
     private Simple simple;
     
     private final DataFormat format = DataFormat.FORMAT_JSON;
@@ -48,11 +50,24 @@ public class SampleApp extends MIDlet {
         int hostPort = Config.SIMPLE_SECURE_PORT;
         
         Configuration configuration = new Configuration(hostAddress, hostPort, Config.SIMPLE_KEEP_ALIVE, Config.DEVICE_TOKEN, Config.DEVICE_TOKEN, null, Config.CLEAN_SESSION);
-        simple = new Simple( Config.SIMPLE_SERVICE_NAME, Config.SIMPLE_DEVICE_NAME,
+        simple = new Simple( Config.SERVICE_ID, Config.DEVICE_ID,
                 configuration,
                 connectionListener, true);
         
+        logATCmd("AT+SKTPCON=1"
+                     + "," + (hostAddress.startsWith("ssl")?"MQTTS":"MQTT")
+                     + "," + hostAddress
+                     + "," + hostPort 
+                     + "," + Config.SIMPLE_KEEP_ALIVE
+                     + "," + (Config.CLEAN_SESSION?1:0)
+                     + ",simple_v1"
+                     + "," + Config.DEVICE_TOKEN 
+                     + "," + Config.SERVICE_ID
+                     + "," + Config.DEVICE_ID
+                );
+
         simple.tpSimpleConnect();
+        logATCmd("OK");
     }
     
     public void pauseApp() {
@@ -80,12 +95,17 @@ public class SampleApp extends MIDlet {
         if(format == DataFormat.FORMAT_CSV){
             String data = "1.0,710DJC5I10000290,0,127.115479,37.380257,7";
             
+            logATCmd("AT+SKTPDAT=1,attribute,1,"+data);
             simple.tpSimpleRawAttribute(data, format, callback);
+            logATCmd("OK");
+            
         } else { // if(format == DataFormat.FORMAT_JSON)
             // {"sysHardwareVersion":"1.0", "sysSerialNumber":"710DJC5I10000290", "sysErrorCode":0, "sysLocationLongitude":127.115479, "sysLocationLatitude": 37.380257, "led":7}
             String data = "{\"sysHardwareVersion\":\"1.0\", \"sysSerialNumber\":\"710DJC5I10000290\", \"sysErrorCode\":0, \"sysLocationLongitude\":127.115479, \"sysLocationLatitude\": 37.380257, \"led\":7}";
             
+            logATCmd("AT+SKTPDAT=1,attribute,0,"+data);
             simple.tpSimpleRawAttribute(data, format, callback);
+            logATCmd("OK");
         }
         
 //        ArrayElement element = new ArrayElement();
@@ -102,12 +122,17 @@ public class SampleApp extends MIDlet {
 //            String data = "267,48,26.26";
             String data = "" + getTimeStamp() + "," + Sensor.getTemperature() + ","+ Sensor.getHumidity() + ","+ Sensor.getLight();
             
+            logATCmd("AT+SKTPDAT=1,telemetry,1,"+data);
             simple.tpSimpleRawTelemetry(data, format, callback);
+            logATCmd("OK");
         } else { // if(format == DataFormat.FORMAT_JSON)
             String data = "{\"light\":"+Sensor.getLight()+",\"humidity\":"+Sensor.getHumidity()+",\"temperature\":"+Sensor.getTemperature()+",\"ts\":" + getTimeStamp() +"}";
             
+            logATCmd("AT+SKTPDAT=1,telemetry,0,"+data);
             simple.tpSimpleRawTelemetry(data, format, callback);
-        }       
+            logATCmd("OK");
+        }        
+        logATCmd("result : " + getError());
         
 //        ArrayElement element = new ArrayElement();
 //        element.addNumberElement("temp1", 26.26);
@@ -117,6 +142,12 @@ public class SampleApp extends MIDlet {
     }
     
     private int errorCode = 0;
+    private String getError(){
+        logATCmd("AT+SKTPERR=1");
+        
+        return "+SKTPE:" + errorCode;
+    } 
+    
     ResultListener callback = new ResultListener() {
         
         public void onResponse(int response) {
@@ -147,6 +178,26 @@ public class SampleApp extends MIDlet {
     private int getTimeStamp(){
         return (int) (System.currentTimeMillis()/1000);
     }
+
+    private void atCheckConnect(){
+        logATCmd("AT+SKTPCON");
+        logATCmd("OK" + "\n" + "status:" + (simple.tpSimpleIsConnected()?"connected":"disconnected"));
+
+        logATCmd("AT+SKTP");
+        String connectionState = ""
+                     + "status:" + (simple.tpSimpleIsConnected()?"connected":"disconnected")
+                     + "\n" + "thingplug_protocol:" + (Config.SIMPLE_SECURE_HOST.startsWith("ssl")?"MQTTS":"MQTT")
+                     + "\n" + "thingplug_port:" + Config.SIMPLE_SECURE_PORT
+                     + "\n" + "keep-alive:" + Config.SIMPLE_KEEP_ALIVE
+                     + "\n" + "cleansession:" + (Config.CLEAN_SESSION?"true":"false")
+                     + "\n" + "api_version:" + "simple_v1"
+                     + "\n" + "device_token:" + Config.DEVICE_TOKEN
+                     + "\n" + "service_id:" + Config.SERVICE_ID
+                     + "\n" + "device_id:" + Config.DEVICE_ID
+                     ;
+        logATCmd("OK" + "\n" + connectionState);
+        
+    }
     
     ConnectionListener connectionListener = new ConnectionListener() {
         
@@ -155,7 +206,10 @@ public class SampleApp extends MIDlet {
             final int period = 10*1000;
             
             logInfo("onConnected");
-            
+            logATCmd("+SKTPCON=0");
+
+            atCheckConnect();
+
             if(null == timer){
                 timer = new Timer();
             }else{
@@ -168,6 +222,8 @@ public class SampleApp extends MIDlet {
         
         public void onDisconnected() {
             logInfo("onDisconnected");
+            errorCode = -1;
+            logATCmd("+SKTPCON=-1");
         }
         
         
@@ -187,14 +243,18 @@ public class SampleApp extends MIDlet {
         
         public void onDisconnectFailure() {
             logInfo("onDisconnectFailure");
+            errorCode = 0;
+            logATCmd("+SKTPCON=0");
         }
         
         public void onConnectFailure() {
             logInfo("onConnectFailure");
+            logATCmd("+SKTPCON=-1");
         }
         
         public void onConnectionLost() {
             logInfo("onConnectionLost");
+            logATCmd("+SKTPCON=-1");
         }
         
         
@@ -210,7 +270,10 @@ public class SampleApp extends MIDlet {
                 SimpleMessage simpleMessage = SimpleMessage.parsing(payload);
                 if(null != simpleMessage){
                     if(null != simpleMessage.result){
-                        logInfo("onMessageReceived result : " + simpleMessage.result);
+                        if(null != simpleMessage.error){
+                            errorCode = simpleMessage.error.code;
+                            logATCmd("result : " + getError());
+                        }
                         return;
                     }
                                         
@@ -220,6 +283,9 @@ public class SampleApp extends MIDlet {
                             Log.print("\n\n\n");
                             logInfo("### " + rpcReq.method.toUpperCase() + " --------------START[[");
                         }
+                        
+                        logATCmd("+SKTPCMD=" + rpcReq.method + "," + rpcReq.id + ",1," + rpcReq.params.toString());
+                        
                         if(Define.RPC_RESET.equals(rpcReq.method)){
                             
                         }else if(Define.RPC_REBOOT.equals(rpcReq.method)){
@@ -239,6 +305,8 @@ public class SampleApp extends MIDlet {
                         }else if(Define.RPC_FIRMWARE_UPGRADE.equals(rpcReq.method)){
                             
                             // DO FIRMWARE UPGRADE here...
+                            
+                            logATCmd("AT+SKTPRES=1" + "," + rpcReq.method + "," + rpcReq.id + ",0,{\"status\":\"SUCCESS\"}");
                             
                             RPCResponse rsp = new RPCResponse();
                                rsp.setCmd(simpleMessage.cmd);
@@ -302,10 +370,19 @@ public class SampleApp extends MIDlet {
                                 rsp.setResult(result);
                                 if(result){
                                     ArrayElement arrayElement = new ArrayElement();
-                                    arrayElement.addNumberElement("led", 7);
+                                    arrayElement.addNumberElement("led", control);
                                     rsp.setResultArray(arrayElement);
-                                }else{                                    
-                                    rsp.setError(111, "wrong parameters");
+                                    
+                                    String successBody = "{\"led\":"+ control +"}";
+                                    logATCmd("AT+SKTPRES=1" + "," + rpcReq.method + "," + rpcReq.id + ",0," +  successBody);
+										
+                                }else{
+                                    int errorCode = 111;
+                                    String errorMessage = "wrong parameters";
+                                    rsp.setError(errorCode, errorMessage);
+
+                                    String errorBody = "{\"code\":"+errorCode+", \"message\":\""+errorMessage+"\"}";
+                                    logATCmd("AT+SKTPRES=1" + "," + rpcReq.method + "," + rpcReq.id + ",1," +  errorBody);
                                 }
                                 
                                 String rawResult = convertRawResult(rsp);
@@ -314,6 +391,8 @@ public class SampleApp extends MIDlet {
                             }
                         }
                         
+                        logATCmd("+SKTPCMD=" + rpcReq.method + "," + rpcReq.id + ",3");
+                        logATCmd("OK");
                         
                         if(null != rpcReq.method){
                             logInfo("### " + rpcReq.method.toUpperCase() + " --------------]]END\n\n\n");
@@ -323,6 +402,7 @@ public class SampleApp extends MIDlet {
                             Log.print("\n\n\n");
                             logInfo("### " + simpleMessage.cmd.toUpperCase() + " --------------START[[");
                             
+                            logATCmd("+SKTPCMD=set_attr," + simpleMessage.cmdId + ",3," + simpleMessage.attribute.toString());
                             
                             if(format == DataFormat.FORMAT_JSON){
                                 int led = simpleMessage.attribute.getInt("led");
@@ -416,6 +496,10 @@ public class SampleApp extends MIDlet {
 
         return true;
         
+    }
+    
+	private void logATCmd(String message){
+        Log.print(TAG_AT_CMD, message);
     }
     
     private void logInfo(String message){
